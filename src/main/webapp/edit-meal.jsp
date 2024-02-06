@@ -10,8 +10,8 @@
 <hr>
 <section>
     <form method="post" action="meals" enctype="application/x-www-form-urlencoded">
-        <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo" scope="request"/>
-        <h2>${meal.id == 0 ? "Add meal" : "Edit meal"}</h2>
+        <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
+        <h2>${meal.id == null ? "Add meal" : "Edit meal"}</h2>
         <input type="hidden" name="id" value="${meal.id}">
         <table>
             <tr>
@@ -20,11 +20,11 @@
             </tr>
             <tr>
                 <td>Description</td>
-                <td><input type="text" name="description" size=30 value="${meal.description}"></td>
+                <td><input type="text" name="description" size=30 value="${meal.description}" required></td>
             </tr>
             <tr>
                 <td>Calories</td>
-                <td><input type="text" name="calories" size=30 value="${meal.calories}" pattern="\d+"></td>
+                <td><input type="number" name="calories" size=30 value="${meal.calories}" required></td>
             </tr>
         </table>
         <button type="submit">Save</button>

@@ -1,14 +1,16 @@
 package ru.javawebinar.topjava.repository;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
-public interface Repository<T, I> {
-    Collection<T> findAll();
+public interface Repository<T> {
+    List<T> findAll();
 
-    Optional<T> findById(I id);
+    Optional<T> findById(Integer id);
 
-    void save(T entity);
+    T save(T entity);
 
-    void delete(I id);
+    T update(T entity);
+
+    void delete(Integer id);
 }
