@@ -31,7 +31,7 @@ public class MealServlet extends HttpServlet {
 
     private static final String MEALS_JSP_PATH = "/meals.jsp";
 
-    private static final String EDIT_JSP_PATH = "/edit-meal.jsp";
+    private static final String EDIT_JSP_PATH = "/editMeal.jsp";
 
     private static final String DELETE = "delete";
 
@@ -45,8 +45,7 @@ public class MealServlet extends HttpServlet {
     private Repository<Meal> repository;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init() {
         repository = new MemoryMealRepository();
     }
 
@@ -61,11 +60,11 @@ public class MealServlet extends HttpServlet {
             return;
         }
         String stringMealId;
-        Integer mealId = null;
+        int mealId = 0;
         if (CHECK_ACTION.contains(action)) {
             stringMealId = Optional.ofNullable(request.getParameter("id"))
                     .orElseThrow(() -> new IllegalArgumentException("MealId is null"));
-            mealId = Integer.valueOf(stringMealId);
+            mealId = Integer.parseInt(stringMealId);
         }
         switch (action) {
             case DELETE:
@@ -75,18 +74,19 @@ public class MealServlet extends HttpServlet {
                 break;
             case CREATE:
                 request.setAttribute("meal", new Meal());
-                log.debug("Forwarding to edit-meal.jsp");
+                log.debug("Forwarding to editMeal.jsp");
                 request.getRequestDispatcher(EDIT_JSP_PATH).forward(request, response);
                 break;
             case UPDATE:
                 Meal meal = repository
                         .findById(mealId).orElseThrow(() -> new NoSuchElementException("Meal not found"));
                 request.setAttribute("meal", meal);
-                log.debug("Forwarding to edit-meal.jsp");
+                log.debug("Forwarding to editMeal.jsp");
                 request.getRequestDispatcher(EDIT_JSP_PATH).forward(request, response);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown action");
+                log.debug("Redirecting to meals.jsp");
+                response.sendRedirect(request.getContextPath() + MEALS);
         }
     }
 
@@ -100,7 +100,7 @@ public class MealServlet extends HttpServlet {
         int calories = Integer.parseInt(request.getParameter("calories"));
         Meal meal = new Meal(id, dateTime, description, calories);
         if (id == null) {
-            repository.save(meal);
+            repository.create(meal);
         } else {
             repository.update(meal);
         }

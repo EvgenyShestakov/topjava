@@ -6,11 +6,11 @@ import java.util.Optional;
 public interface Repository<T> {
     List<T> findAll();
 
-    Optional<T> findById(Integer id);
+    Optional<T> findById(int id);
 
-    T save(T entity);
+    T create(T entity);
 
     T update(T entity);
 
-    void delete(Integer id);
+    void delete(int id);
 }

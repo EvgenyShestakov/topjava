@@ -7,6 +7,7 @@ import ru.javawebinar.topjava.model.Meal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,13 +22,21 @@ public class MemoryMealRepository implements Repository<Meal> {
     private final Map<Integer, Meal> meals = new ConcurrentHashMap<>();
 
     public MemoryMealRepository() {
-        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
-        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
-        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
-        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
-        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
-        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
-        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+        Arrays.asList(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0),
+                                "Завтрак", 500),
+                        new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0),
+                                "Обед", 1000),
+                        new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0),
+                                "Ужин", 500),
+                        new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0),
+                                "Еда на граничное значение", 100),
+                        new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0),
+                                "Завтрак", 1000),
+                        new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0),
+                                "Обед", 500),
+                        new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0),
+                                "Ужин", 410))
+                .forEach(this::create);
     }
 
     @Override
@@ -37,13 +46,13 @@ public class MemoryMealRepository implements Repository<Meal> {
     }
 
     @Override
-    public Optional<Meal> findById(Integer id) {
+    public Optional<Meal> findById(int id) {
         log.debug("find meal by id {}", id);
         return Optional.ofNullable(meals.get(id));
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal create(Meal meal) {
         meal.setId(mealIdCounter.incrementAndGet());
         log.debug("save meal {}", meal);
         return meals.put(meal.getId(), meal);
@@ -51,18 +60,17 @@ public class MemoryMealRepository implements Repository<Meal> {
 
     @Override
     public Meal update(Meal meal) {
-        Meal oldMeal = meals.get(meal.getId());
-        if (oldMeal != null) {
+        return meals.computeIfPresent(meal.getId(), (key, oldMeal) -> {
             log.debug("update meal {}", oldMeal);
             oldMeal.setDateTime(meal.getDateTime());
             oldMeal.setDescription(meal.getDescription());
             oldMeal.setCalories(meal.getCalories());
-        }
-        return oldMeal;
+            return oldMeal;
+        });
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(int id) {
         log.debug("delete meal by id {}", id);
         meals.remove(id);
     }
