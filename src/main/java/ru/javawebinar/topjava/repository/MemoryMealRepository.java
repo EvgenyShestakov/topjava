@@ -60,13 +60,8 @@ public class MemoryMealRepository implements Repository<Meal> {
 
     @Override
     public Meal update(Meal meal) {
-        return meals.computeIfPresent(meal.getId(), (key, oldMeal) -> {
-            log.debug("update meal {}", oldMeal);
-            oldMeal.setDateTime(meal.getDateTime());
-            oldMeal.setDescription(meal.getDescription());
-            oldMeal.setCalories(meal.getCalories());
-            return oldMeal;
-        });
+        log.debug("update meal {}", meal);
+        return meals.replace(meal.getId(), meal);
     }
 
     @Override
