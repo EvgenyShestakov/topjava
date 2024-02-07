@@ -55,13 +55,14 @@ public class MemoryMealRepository implements Repository<Meal> {
     public Meal create(Meal meal) {
         meal.setId(mealIdCounter.incrementAndGet());
         log.debug("save meal {}", meal);
-        return meals.put(meal.getId(), meal);
+        meals.put(meal.getId(), meal);
+        return meal;
     }
 
     @Override
     public Meal update(Meal meal) {
         log.debug("update meal {}", meal);
-        return meals.replace(meal.getId(), meal);
+        return meals.replace(meal.getId(), meal) != null ? meal : null;
     }
 
     @Override
